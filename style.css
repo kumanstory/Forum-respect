@@ -1,149 +1,89 @@
-/* ===== BODY & RESET ===== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background: #f0f2f5;
-  color: #333;
-  line-height: 1.5;
-  padding-bottom: 50px;
+body{
+
+  font-family:Arial,sans-serif;
+
+  background:#f0f2f5;
+
+  color:#333;
 }
 
-/* ===== HEADER ===== */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* bisa ganti flex-start untuk kiri */
-  background: #007bff;
-  color: #fff;
-  padding: 15px;
+header{
+
+  background:#007bff;
+
+  color:white;
+
+  padding:15px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
 }
 
-header img.logo {
-  height: 40px;
-  margin-right: 10px;
+main{
+
+  padding:20px;
 }
 
-header h1 {
-  font-size: 24px;
+.card,
+.post{
+
+  background:white;
+
+  padding:15px;
+
+  border-radius:10px;
+
+  margin-bottom:15px;
+
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* ===== MAIN & CARDS ===== */
-main {
-  padding: 15px;
+textarea,
+input{
+
+  width:100%;
+
+  padding:10px;
+
+  margin-bottom:10px;
+
+  border:1px solid #ccc;
+
+  border-radius:5px;
 }
 
-.card {
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin-bottom: 15px;
+button{
+
+  padding:10px 15px;
+
+  border:none;
+
+  background:black;
+
+  color:white;
+
+  border-radius:5px;
+
+  cursor:pointer;
 }
 
-/* ===== TEXTAREA ===== */
-textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  margin-top: 5px;
-  resize: vertical;
-  font-size: 14px;
+.post{
+
+  cursor:pointer;
+
+  transition:0.3s;
 }
 
-/* ===== BUTTONS ===== */
-button {
-  padding: 7px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 5px;
-  font-size: 14px;
-  transition: 0.2s;
-}
+.post:hover{
 
-button:hover {
-  opacity: 0.9;
-}
-
-/* Tombol utama kirim post */
-#postForm button {
-  background: #007bff;
-  color: #fff;
-}
-
-#postForm button:hover {
-  background: #0056b3;
-}
-
-/* Tombol komentar */
-.comment-btn {
-  background: #28a745;
-  color: #fff;
-}
-
-.comment-btn:hover {
-  background: #218838;
-}
-
-/* Tombol edit post/komentar */
-.edit-btn {
-  background: #ffc107;
-  color: #333;
-  margin-left: 5px;
-}
-
-.edit-btn:hover {
-  background: #e0a800;
-}
-
-/* ===== POST & COMMENT CONTENT ===== */
-.post .username, .comment .username {
-  font-weight: bold;
-  color: #007bff;
-}
-
-.post .text, .comment .text {
-  margin: 5px 0;
-  white-space: pre-wrap; /* menjaga format enter */
-}
-
-.post .time, .comment .time {
-  color: #666;
-  font-size: 12px;
-}
-
-/* ===== KOMENTAR ===== */
-.comments {
-  margin-top: 10px;
-  padding-left: 10px;
-  border-left: 2px solid #ddd;
-}
-
-/* Card komentar */
-.comment {
-  background: #f8f9fa;
-  padding: 8px;
-  border-radius: 5px;
-  margin-bottom: 5px;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 480px) {
-  header h1 {
-    font-size: 20px;
-  }
-
-  header img.logo {
-    height: 30px;
-  }
-
-  button {
-    width: 100%;
-  }
+  transform:scale(1.02);
 }

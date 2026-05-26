@@ -1,123 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
+
 <head>
+
 <meta charset="UTF-8">
-<title>Mini Forum – Beranda</title>
-<style>
-    body { font-family: Arial; padding: 20px; }
-    .nav { display: flex; justify-content: space-between; margin-bottom: 20px; }
-    button {
-        padding: 10px 15px;
-        border: none;
-        background: black;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .post {
-        background: #fff;
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid #ddd;
-        margin-bottom: 15px;
-    }
-</style>
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Buat Post</title>
+
+<link rel="stylesheet"
+href="style.css?v=1">
+
 </head>
+
 <body>
 
-<div class="nav">
-    <h2>Mini Forum</h2>
+<header>
 
-    <div>
-        <button onclick="goCreate()">Buat Post</button>
-        <button onclick="login()" id="loginBtn">Login</button>
-        <button onclick="logout()" id="logoutBtn" style="display:none;">Logout</button>
-    </div>
-</div>
+  <h1>Buat Postingan</h1>
 
-<hr>
+</header>
 
-<h3>Daftar Postingan</h3>
-<div id="post-list"></div>
+<main>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js"></script>
+  <div class="card">
 
-<script>
-// CONFIG FIREBASE
-<!-- Firebase COMPAT Version (Wajib agar login berfungsi) -->
+    <input type="text"
+    id="title"
+    placeholder="Judul">
+
+    <textarea
+    id="content"
+    placeholder="Tulis postingan...">
+
+    </textarea>
+
+    <button onclick="uploadPost()">
+
+      Upload
+
+    </button>
+
+  </div>
+
+</main>
+
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore-compat.js"></script>
 
-<script>
-// CONFIG FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyD7TCMA0YL9m_D3umq7LBnSZ6_Ed5pzajg",
-  authDomain: "mini-forum-9bee7.firebaseapp.com",
-  projectId: "mini-forum-9bee7",
-  storageBucket: "mini-forum-9bee7.firebasestorage.app",
-  messagingSenderId: "650699848376",
-  appId: "1:650699848376:web:ebf566678e297858de124d",
-};
-
-// Init Firebase COMPAT
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// LOGIN SYSTEM
-function login() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .catch(err => alert(err.message));
-}
-
-function logout() {
-    auth.signOut();
-}
-
-// UI Login/Logout
-auth.onAuthStateChanged(user => {
-    if (user) {
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline";
-    } else {
-        loginBtn.style.display = "inline";
-        logoutBtn.style.display = "none";
-    }
-});
-
-// GO CREATE PAGE
-function goCreate() {
-    window.location.href = "create.html";
-}
-
-// LOAD POSTS
-db.collection("posts")
-  .orderBy("time", "desc")
-  .onSnapshot(snapshot => {
-    let html = "";
-    snapshot.forEach(doc => {
-        let p = doc.data();
-        html += `
-            <div class="post" onclick="openPost('${doc.id}')">
-                <h3>${p.title}</h3>
-                <p>${p.content.substring(0,100)}...</p>
-                <small>${new Date(p.time).toLocaleString()}</small>
-            </div>
-        `;
-    });
-
-    document.getElementById("post-list").innerHTML = html;
-});
-
-function openPost(id) {
-    window.location.href = "index.html?id=" + id;
-}
-</script>
+<script src="app.js?v=1"></script>
 
 </body>
 </html>

@@ -1,269 +1,47 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Forum Mini — Posting</title>
 
-<style>
-/* Basic + reset */
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,Arial,sans-serif;background:#f2f5f8;color:#111;min-height:100vh;padding:16px;}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.brand{display:flex;align-items:center;gap:10px}
-.brand img{height:36px}
-.brand h1{font-size:18px}
-.auth-buttons button{margin-left:8px;padding:8px 10px;border-radius:8px;border:0;cursor:pointer}
-.auth-buttons button.google{background:#db4437;color:#fff}
-.auth-buttons button.email{background:#6c63ff;color:#fff}
-.auth-buttons button.anon{background:#6c757d;color:#fff}
+<meta charset="UTF-8">
 
-/* form */
-.card{background:#fff;border-radius:10px;padding:14px;box-shadow:0 6px 18px rgba(20,30,50,0.06);margin-bottom:14px}
-.input-row{display:flex;gap:8px;margin-bottom:8px}
-.input-row input, textarea{flex:1;padding:10px;border-radius:8px;border:1px solid #e3e7ee;outline:none;font-size:14px}
-textarea{min-height:86px;resize:vertical}
-.btn-primary{background:#007bff;color:#fff;border:0;padding:10px 12px;border-radius:8px;cursor:pointer}
-.btn-primary:active{transform:translateY(1px)}
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-/* posts list */
-#postList{display:flex;flex-direction:column;gap:12px;margin-top:8px}
-.post-card{background:#fff;padding:12px;border-radius:10px;box-shadow:0 4px 12px rgba(20,30,50,0.06);position:relative;overflow:hidden;transform:translateY(6px);opacity:0;animation:cardIn .32s ease forwards}
-@keyframes cardIn{to{transform:none;opacity:1}}
-.post-top{display:flex;justify-content:space-between;align-items:start;gap:10px}
-.post-meta{color:#4b5563;font-size:13px}
-.post-text{margin:8px 0 10px;white-space:pre-wrap}
-.post-actions{display:flex;gap:8px;flex-wrap:wrap}
-.post-actions button{background:transparent;border:1px solid #e6e9ef;padding:6px 8px;border-radius:8px;cursor:pointer;color:#374151}
-.post-actions button.primary{background:#e6f0ff;border-color:#cfe4ff;color:#0366d6}
+<title>Postingan</title>
 
-/* link ke comments */
-.comments-link{display:inline-block;margin-left:6px;color:#0366d6;text-decoration:none;font-weight:600}
+<link rel="stylesheet"
+href="style.css?v=1">
 
-/* small */
-.small{font-size:12px;color:#6b7280}
-
-/* snackbar / toast */
-#snackbar{visibility:hidden;min-width:160px;background:#111;color:#fff;text-align:center;border-radius:6px;padding:10px;position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:999;opacity:0;transition:0.25s}
-#snackbar.show{visibility:visible;opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* responsive tweaks */
-@media(min-width:720px){
-  body{padding:28px}
-  .brand h1{font-size:20px}
-}
-</style>
 </head>
+
 <body>
 
 <header>
-  <div class="brand">
-    <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-    <h1>Forum Mini</h1>
-  </div>
 
-  <div class="auth-buttons">
-    <button class="google" id="btnGoogle">Login Google</button>
-    <button class="email" id="btnEmail">Login Email</button>
-    <button class="anon" id="btnAnon">Login Anon</button>
-  </div>
+  <h1>Detail Post</h1>
+
 </header>
 
-<!-- post form -->
-<section class="card" id="postForm">
-  <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-    <div style="flex:1">
-      <input id="postTitle" placeholder="Judul (opsional)" />
-    </div>
-    <div style="min-width:110px;text-align:right">
-      <div class="small">Signed in as:</div>
-      <div id="currentUser" class="small" style="font-weight:600">Not signed in</div>
-    </div>
+<main>
+
+  <div class="card"
+  id="post-detail">
+
+    Loading...
+
   </div>
 
-  <textarea id="postText" placeholder="Tulis postingan..."></textarea>
-  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-    <button class="btn-primary" id="btnPost">Kirim Postingan</button>
-  </div>
-</section>
+</main>
 
-<!-- posts -->
-<section id="postList"></section>
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
 
-<div id="snackbar"></div>
+<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth-compat.js"></script>
 
-<!-- Firebase SDK (compatible) -->
-<script type="module">
-/* ================== IMPORTS (modular) ================== */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore-compat.js"></script>
 
-/* =============== FIREBASE CONFIG - ganti dengan punya kamu =============== */
-const firebaseConfig = {
-  apiKey: "AIzaSyD7TCMA0YL9m_D3umq7LBnSZ6_Ed5pzajg",
-  authDomain: "mini-forum-9bee7.firebaseapp.com",
-  projectId: "mini-forum-9bee7",
-  storageBucket: "mini-forum-9bee7.firebasestorage.app",
-  messagingSenderId: "650699848376",
-  appId: "1:650699848376:web:ebf566678e297858de124d",
-  measurementId: "G-ZFWV99EVQL"
-};
-
-};
-/* ====================================================================== */
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-/* ========== helper: toast ========== */
-function toast(msg) {
-  const el = document.getElementById('snackbar');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(()=> el.classList.remove('show'), 2500);
-}
-
-/* ========== AUTH UI HANDLERS ========== */
-const btnGoogle = document.getElementById('btnGoogle');
-const btnEmail  = document.getElementById('btnEmail');
-const btnAnon   = document.getElementById('btnAnon');
-const currentUserEl = document.getElementById('currentUser');
-
-btnGoogle.onclick = async () => {
-  try {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-  } catch(e){ toast("Login Google gagal"); console.error(e) }
-};
-
-btnAnon.onclick = async () => {
-  try {
-    await signInAnonymously(auth);
-  } catch(e){ toast("Login anonim gagal"); console.error(e) }
-};
-
-btnEmail.onclick = async () => {
-  // simple prompt flow: ask register or login
-  const mode = prompt("Ketik 'r' untuk register, lain untuk login:");
-  const email = prompt("Masukkan email:");
-  const pass  = prompt("Masukkan password:");
-  if(!email || !pass) return toast("Email/password dibutuhkan");
-  try {
-    if(mode === 'r') {
-      await createUserWithEmailAndPassword(auth, email, pass);
-      toast("Registrasi berhasil");
-    } else {
-      await signInWithEmailAndPassword(auth, email, pass);
-      toast("Login berhasil");
-    }
-  } catch(e){ toast("Email auth error"); console.error(e) }
-}
-
-onAuthStateChanged(auth, user => {
-  if(user){
-    const name = user.displayName || user.email || "Anon";
-    currentUserEl.textContent = name;
-    toast("Signed in as " + name);
-  } else {
-    currentUserEl.textContent = "Not signed in";
-  }
-});
-
-/* ========== POST CREATION ========== */
-document.getElementById('btnPost').onclick = async () => {
-  const title = document.getElementById('postTitle').value.trim();
-  const text  = document.getElementById('postText').value.trim();
-  if(!text) return toast("Tulis sesuatu dulu");
-  const user = auth.currentUser;
-  if(!user) return toast("Login dulu untuk posting");
-
-  try {
-    const postsCol = collection(db, "posts");
-    const docRef = await addDoc(postsCol, {
-      title: title || null,
-      text,
-      uid: user.uid,
-      userName: user.displayName || user.email || "Anon",
-      createdAt: serverTimestamp(),
-      likes: 0
-    });
-    document.getElementById('postText').value = "";
-    document.getElementById('postTitle').value = "";
-    toast("Postingan terkirim");
-    // optional: auto navigate to comments page
-    // window.location.href = `comments.html?id=${docRef.id}`;
-  } catch(e){ console.error(e); toast("Gagal kirim posting") }
-};
-
-/* ========== LISTEN TO POSTS (realtime) ========== */
-const postListEl = document.getElementById('postList');
-const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-
-onSnapshot(postsQuery, snapshot => {
-  postListEl.innerHTML = "";
-  snapshot.forEach((docSnap, idx) => {
-    const data = docSnap.data();
-    const id = docSnap.id;
-    const title = data.title ? `<strong>${escapeHtml(data.title)}</strong>` : '';
-    const text = escapeHtml(data.text || "");
-    const user = escapeHtml(data.userName || "Anon");
-    const when = data.createdAt && data.createdAt.toDate ? formatDate(data.createdAt.toDate()) : "beberapa saat lalu";
-
-    const postHtml = document.createElement('article');
-    postHtml.className = 'post-card';
-    postHtml.innerHTML = `
-      <div class="post-card-inner">
-        <div class="post-top">
-          <div>
-            ${title}
-            <div class="post-text">${text}</div>
-            <div class="post-meta small">Oleh: ${user} • <span class="small">${when}</span></div>
-          </div>
-          <div style="text-align:right">
-            <a class="comments-link" href="comments.html?id=${id}">Komentar ➜</a>
-            ${auth.currentUser && auth.currentUser.uid === data.uid ? `<div style="margin-top:8px"><button onclick="editPost('${id}')">Edit</button><button onclick="deletePost('${id}')">Hapus</button></div>` : ''}
-          </div>
-        </div>
-      </div>
-    `;
-    // small animation delay
-    postHtml.style.animationDelay = (idx*30)+'ms';
-    postListEl.appendChild(postHtml);
-  });
-});
-
-/* ========== HELPERS: edit/delete ========== */
-window.editPost = async (postId) => {
-  const docRef = doc(db, "posts", postId);
-  const newText = prompt("Edit postingan (ganti isi):");
-  if(!newText) return;
-  try {
-    await updateDoc(docRef, { text: newText });
-    toast("Posting diperbarui");
-  } catch(e){ console.error(e); toast("Gagal update") }
-};
-
-window.deletePost = async (postId) => {
-  if(!confirm("Hapus postingan?")) return;
-  try {
-    await deleteDoc(doc(db, "posts", postId));
-    toast("Posting dihapus");
-  } catch(e){ console.error(e); toast("Gagal hapus") }
-};
-
-/* ========== UTIL FUNCTIONS ========== */
-function escapeHtml(str){
-  if(!str) return "";
-  return str.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
-}
-function formatDate(d){
-  return d.toLocaleString();
-}
-
-/* End of module */
-</script>
+<script src="app.js?v=1"></script>
 
 </body>
 </html>
